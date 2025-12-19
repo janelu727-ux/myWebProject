@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nien Chen Lu Portfolio</title>
     <style>
-        /* --- 全域重置與基礎設定 --- */
+        /* --- 基礎設定 --- */
         * {
             margin: 0;
             padding: 0;
@@ -15,27 +15,23 @@
 
         html {
             scroll-behavior: smooth;
-            /* 讓點選選單或 TOP 時平滑捲動 */
         }
 
         body {
             font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            font-weight: bold;
             background-color: #f0eeeb;
-            /* 淺灰背景，襯托作品 */
             color: #333;
+            line-height: 1.6;
         }
 
-        /* --- 導覽列樣式 (Navbar) --- */
+        /* --- 導覽列 --- */
         .navbar {
             background-color: #4a4233be;
-            /* 深灰半透明 */
             padding: 20px 0;
             text-align: right;
             position: fixed;
             width: 100%;
             top: 0;
-            left: 0;
             z-index: 1000;
         }
 
@@ -52,48 +48,154 @@
         .navbar ul li a {
             color: #f0eeeb;
             text-decoration: none;
-            font-weight: bold;
-            /* 導覽列字體加粗 */
             font-size: 15px;
             letter-spacing: 1.5px;
-            transition: color 0.3s ease;
             text-transform: uppercase;
-            /* 選單文字大寫增加質感 */
+            transition: 0.3s;
         }
 
         .navbar ul li a:hover {
-            color: #000000bb;
-            font-weight: normal;
+            color: #000;
         }
 
-        /* --- 內容容器與圖片設定 --- */
-        .content-wrapper {
-            padding-top: 0;
-            /* 消除與導覽列的空隙 */
+        /* --- 輪播區塊 --- */
+        .carousel-container {
+            color: #746254;
+            position: relative;
+            max-width: 1100px;
+            margin: 100px auto 50px;
+            padding: 0 20px;
+        }
+
+        .carousel-viewport {
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            padding: 20px 0;
+        }
+
+        .carousel-track {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            /* 水平置中所有區塊 */
+            width: 200%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .page-section {
+        .carousel-group {
+            display: flex;
+            width: 50%;
+            justify-content: space-evenly;
+        }
+
+        .img-box {
+            width: 22%;
+            aspect-ratio: 3 / 2;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #eee;
+        }
+
+        .img-box img {
             width: 100%;
-            display: flex;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .img-box img:hover {
+            transform: scale(1.05);
+        }
+
+        /* 輪播切換按鈕 */
+        .nav-btn {
+            position: absolute;
+            top: 60%;
+            transform: translateY(-50%);
+            background: #4a4233be;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 10;
+        }
+
+        .prev {
+            left: 0;
+        }
+
+        .next {
+            right: 0;
+        }
+
+        /* --- 燈箱樣式 --- */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             justify-content: center;
-            background-color: transparent;
-            margin: 0;
-            /* 移除圖片之間的上下間隙，若要間距可調整此值 */
+            align-items: center;
+            flex-direction: column;
         }
 
-        .page-section img {
-            width: 70%;
-            /* 圖片寬度 75% */
-            height: auto;
-            display: block;
-            /* 輕微陰影增加立體感 */
+        .lightbox-content {
+            max-width: 80%;
+            max-height: 75%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        /* --- TOP 回到頂部按鈕 --- */
+        #lightbox-caption {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: #fff;
+            font-size: 50px;
+            cursor: pointer;
+        }
+
+        /* 燈箱內的左右按鈕 */
+        .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            font-size: 60px;
+            cursor: pointer;
+            padding: 20px;
+            transition: 0.3s;
+        }
+
+        .lb-nav:hover {
+            color: #ccc;
+        }
+
+        .lb-prev {
+            left: 5%;
+        }
+
+        .lb-next {
+            right: 5%;
+        }
+
+        /* --- 回到頂部 --- */
         #backToTop {
             display: none;
             /* 初始隱藏 */
@@ -119,32 +221,25 @@
             background-color: #ffffff;
             color: #746254;
             transform: translateY(-5px);
-            /* 懸停時往上飄 */
         }
 
-        /* --- 手機版適應 (Responsive) --- */
-        @media (max-width: 768px) {
-            .page-section img {
-                width: 90%;
-                /* 手機上圖片調大，閱讀更舒適 */
-            }
+        /* --- 其他內容 --- */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-            .navbar {
-                text-align: center;
-                padding: 15px 0;
-            }
+        .page-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
 
-            .navbar ul {
-                padding-right: 0;
-            }
-
-            .navbar ul li {
-                margin: 0 10px;
-            }
-
-            .navbar ul li a {
-                font-size: 13px;
-            }
+        .page-section img {
+            width: 70%;
+            height: auto;
+            display: block;
         }
     </style>
 </head>
@@ -163,54 +258,137 @@
         </ul>
     </nav>
 
-    <button onclick="topFunction()" id="backToTop" title="Go to top">TOP</button>
+    <button onclick="topFunction()" id="backToTop">TOP</button>
 
     <div class="content-wrapper">
-        <div id="page-1" class="page-section">
-            <img src="./images/01.jpg" alt="Cover Page">
+        <div id="page-1" class="page-section" style="padding-top: 80px;">
+            <img src="./images/01.jpg" alt="封面首頁">
         </div>
-        <div id="page-2" class="page-section">
-            <img src="./images/02.jpg" alt="Graphic Design Showcase">
+
+        <div class="carousel-container">
+            <h2 style="text-align: center; margin-bottom: 20px;">Collection</h2>
+            <div class="carousel-viewport">
+                <div class="carousel-track" id="track">
+                    <div class="carousel-group">
+                        <div class="img-box"><img src="./images/008.jpg" alt="SYN Dessert Studio中秋禮盒海報" class="gallery-img"></div>
+                        <div class="img-box"><img src="./images/009.jpg" alt="Rolex新品上市海報" class="gallery-img"></div>
+                        <div class="img-box"><img src="./images/010.jpg" alt="YouTube縮圖" class="gallery-img"></div>
+                        <div class="img-box"><img src="./images/011.jpg" alt="Lumea新品活動廣告" class="gallery-img"></div>
+                    </div>
+                    <div class="carousel-group">
+                        <div class="img-box"><img src="./images/012.jpg" alt="網頁設計" class="gallery-img"></div>
+                        <div class="img-box"><img src="./images/013.jpg" alt="展覽看板" class="gallery-img"></div>
+                        <div class="img-box"><img src="./images/014.jpg" alt="時尚雜誌封面" class="gallery-img"></div>
+                        <div class="img-box"><img src="./images/015.jpg" alt="時裝秀票券" class="gallery-img"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="nav-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+            <button class="nav-btn next" onclick="moveSlide(1)">&#10095;</button>
         </div>
-        <div id="page-3" class="page-section">
-            <img src="./images/03.jpg" alt="Logo Standards">
-        </div>
-        <div id="page-4" class="page-section">
-            <img src="./images/04.jpg" alt="Exhibition Poster Design">
-        </div>
-        <div id="page-5" class="page-section">
-            <img src="./images/05.jpg" alt="Luméa Packaging Design">
-        </div>
-        <div id="page-6" class="page-section">
-            <img src="./images/06.jpg" alt="Lemonade Cafe Menu and Signage">
-        </div>
-        <div id="page-7" class="page-section">
-            <img src="./images/07.jpg" alt="Contact Information">
-        </div>
+
+        <div id="page-2" class="page-section"><img src="./images/02.jpg"></div>
+        <div id="page-3" class="page-section"><img src="./images/03.jpg"></div>
+        <div id="page-4" class="page-section"><img src="./images/04.jpg"></div>
+        <div id="page-5" class="page-section"><img src="./images/05.jpg"></div>
+        <div id="page-6" class="page-section"><img src="./images/06.jpg"></div>
+        <div id="page-7" class="page-section"><img src="./images/07.jpg"></div>
+    </div>
+
+    <div id="lightbox" class="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <button class="lb-nav lb-prev" onclick="changeLightboxImg(-1)">&#10094;</button>
+
+        <img class="lightbox-content" id="lightbox-img">
+        <div id="lightbox-caption"></div>
+
+        <button class="lb-nav lb-next" onclick="changeLightboxImg(1)">&#10095;</button>
     </div>
 
     <script>
-        // 取得按鈕
-        var mybutton = document.getElementById("backToTop");
+        // ----------------- 變數設定 -----------------
+        let currentIndex = 0;      // 輪播組別 (0 或 1)
+        let lbIndex = 0;           // 燈箱當前圖片索引 (0-7)
+        let autoPlayInterval;
+        const allImgs = document.querySelectorAll('.gallery-img'); // 取得所有作品圖
 
-        // 當捲動超過 500px 時顯示按鈕
+        // ----------------- 輪播自動播放 -----------------
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(() => moveSlide(1), 3500);
+        }
+
+        function moveSlide(direction) {
+            const track = document.getElementById('track');
+            currentIndex += direction;
+            if (currentIndex > 1) currentIndex = 0;
+            if (currentIndex < 0) currentIndex = 1;
+            track.style.transform = `translateX(-${currentIndex * 50}%)`;
+        }
+
+        // ----------------- 燈箱邏輯 -----------------
+        // 幫每一張圖綁定點擊事件
+        allImgs.forEach((img, index) => {
+            img.onclick = function () {
+                openLightbox(index);
+            };
+        });
+
+        function openLightbox(index) {
+            lbIndex = index;
+            clearInterval(autoPlayInterval); // 停止輪播
+            document.getElementById('lightbox').style.display = 'flex';
+            updateLightboxContent();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            startAutoPlay();
+        }
+
+        // 燈箱切換上下張
+        function changeLightboxImg(step) {
+            lbIndex += step;
+            if (lbIndex >= allImgs.length) lbIndex = 0;
+            if (lbIndex < 0) lbIndex = allImgs.length - 1;
+            updateLightboxContent();
+        }
+
+        function updateLightboxContent() {
+            const imgElement = document.getElementById('lightbox-img');
+            const captionElement = document.getElementById('lightbox-caption');
+            const targetImg = allImgs[lbIndex];
+
+            imgElement.src = targetImg.src;
+            captionElement.innerText = targetImg.alt; // 顯示圖片說明
+        }
+
+        // ----------------- 其他功能 -----------------
+        var mybutton = document.getElementById("backToTop");
         window.onscroll = function () {
-            if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+            if (document.documentElement.scrollTop > 500) {
                 mybutton.style.display = "block";
             } else {
                 mybutton.style.display = "none";
             }
         };
 
-        // 點擊 TOP 回到頂部
         function topFunction() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    </script>
 
+        // 支援鍵盤左右鍵與 ESC
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').style.display === 'flex') {
+                if (e.key === "ArrowLeft") changeLightboxImg(-1);
+                if (e.key === "ArrowRight") changeLightboxImg(1);
+                if (e.key === "Escape") closeLightbox();
+            }
+        });
+
+        startAutoPlay();
+    </script>
 </body>
 
 </html>
